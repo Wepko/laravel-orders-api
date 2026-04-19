@@ -48,8 +48,8 @@ WORKDIR /var/www
 # Copy composer files first (better layer caching)
 COPY src/composer.json src/composer.lock* ./
 
-# Install dependencies (не используем --no-scripts, чтобы выполнить post-autoload-dump)
-RUN composer install --no-interaction
+# Install dependencies (--no-scripts to avoid running post-autoload-dump before artisan exists)
+RUN composer install --no-interaction --no-scripts
 
 # Copy application source (исключая vendor)
 COPY src/ .
