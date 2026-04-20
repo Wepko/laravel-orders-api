@@ -53,6 +53,9 @@ class OrderController extends BaseApiController
         );
     }
 
+    /**
+     * @throws OrderNotFoundException
+     */
     public function show(int $id): JsonResponse
     {
         $order = $this->orderService->getOrderWithDetails($id);

@@ -6,6 +6,7 @@
 .phpactor.json
 .phpunit.result.cache
 /.fleet
+.idea
 /.idea
 /.nova
 /.phpunit.cache
@@ -18,7 +19,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+/src/vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db

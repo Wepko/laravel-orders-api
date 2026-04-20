@@ -51,7 +51,6 @@ class OrderStatefulService
             );
         }
 
-        $previousStatus = $this->order->status;
         $this->order->status = $data->status;
         $this->order->save();
 

@@ -6,10 +6,8 @@ namespace App\Http\Requests;
 
 use App\DTOs\OrderUpdateStatusDTO;
 use App\Enums\OrderStatus;
-use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use function Symfony\Component\String\s;
 
 class OrderUpdateStatusRequest extends FormRequest
 {
