@@ -10,6 +10,7 @@ use App\DTOs\OrderFilterDTO;
 //use App\Events\OrderConfirmed;
 //use App\Exceptions\OrderNotFoundException;
 //use App\Exceptions\OrderStatusUpdateException;
+use App\Exceptions\OrderNotFoundException;
 use App\Models\Order;
 //use App\Services\Order\OrderCreationService;
 use App\Services\Order\OrderPaginationService;
@@ -57,17 +58,12 @@ class OrderService
 //        return $order;
 //    }
 //
+    /**
+     * @throws OrderNotFoundException
+     */
     public function getOrderWithDetails(int $orderId): Order
     {
-        return (new orderStatefulService($orderId))->getDetails();
-
-        $order = Order::with(['items.product', 'customer'])->find($orderId);
-
-        if (!$order) {
-            throw new OrderNotFoundException($orderId);
-        }
-
-        return $order;
+        return new orderStatefulService($orderId)->getDetails();
     }
 
     public function getPaginationOrder(OrderFilterDTO $filter): \Illuminate\Pagination\CursorPaginator
