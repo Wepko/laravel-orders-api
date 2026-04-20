@@ -4,33 +4,36 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-//use App\DTOs\CreateOrderDTO;
+use App\DTOs\OrderCreateDTO;
 use App\DTOs\OrderFilterDTO;
 //use App\DTOs\UpdateOrderStatusDTO;
-//use App\Events\OrderConfirmed;
-//use App\Exceptions\OrderNotFoundException;
-//use App\Exceptions\OrderStatusUpdateException;
 use App\Exceptions\OrderNotFoundException;
 use App\Models\Order;
-//use App\Services\Order\OrderCreationService;
+use App\Services\Order\OrderCreationService;
 use App\Services\Order\OrderPaginationService;
 use App\Services\Order\OrderStatefulService;
+use phpDocumentor\Reflection\Exception;
 
 class OrderService
 {
 
 
     public function __construct(
-//        protected OrderCreationService $orderCreationService,
+        protected OrderCreationService $orderCreationService,
         protected OrderPaginationService $orderPaginationService,
     )
     {}
 
-//    public function createOrder(CreateOrderDTO $data): Order
-//    {
-//        return $this->orderCreationService->create($data);
-//    }
-//
+    /**
+     * @throws Exception
+     */
+    public function createOrder(OrderCreateDTO $data): Order
+    {
+        return $this->orderCreationService->create($data);
+    }
+
+
+    //
 //    public function updateStatusFromData(int $orderId, UpdateOrderStatusDTO $data): Order
 //    {
 //        $order = Order::find($orderId);

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\OrderCreateDTO;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderIndexRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
+use phpDocumentor\Reflection\Exception;
 
 class OrderController extends BaseApiController
 {
@@ -34,9 +37,19 @@ class OrderController extends BaseApiController
         );
     }
 
-    public function store(): JsonResponse
+    /**
+     * @throws Exception
+     */
+    public function store(OrderCreateRequest $request): JsonResponse
     {
-        return $this->jsonCreated([], 'Order created');
+        $order = $this->orderService->createOrder(
+            data: $request->toDto()
+        );
+
+        return $this->jsonCreated(
+            data: new OrderResource($order),
+            message: __("Create order success")
+        );
     }
 
     public function show(int $id): JsonResponse
