@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withProviders([
         \App\Providers\AppServiceProvider::class,
+        \App\Providers\EventServiceProvider::class,
         \App\Providers\MigrationServiceProvider::class,
     ])
     ->create();

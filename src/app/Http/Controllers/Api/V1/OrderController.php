@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\DTOs\OrderCreateDTO;
+use App\Exceptions\OrderNotFoundException;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderIndexRequest;
+use App\Http\Requests\OrderUpdateStatusRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -61,8 +62,15 @@ class OrderController extends BaseApiController
         );
     }
 
-    public function updateStatus(int $id): JsonResponse
+    /**
+     * @throws OrderNotFoundException
+     */
+    public function updateStatus(OrderUpdateStatusRequest $request, int $id): JsonResponse
     {
-        return $this->json(['id' => $id], 'Status updated');
+        $order = $this->orderService->updateStatusOrder($id, $request->toDto());
+
+        return $this->jsonUpdated(
+            data: new OrderResource($order)
+        );
     }
 }

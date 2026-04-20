@@ -7,7 +7,9 @@ namespace App\Services;
 use App\DTOs\OrderCreateDTO;
 use App\DTOs\OrderFilterDTO;
 //use App\DTOs\UpdateOrderStatusDTO;
+use App\DTOs\OrderUpdateStatusDTO;
 use App\Exceptions\OrderNotFoundException;
+use App\Http\Requests\OrderUpdateStatusRequest;
 use App\Models\Order;
 use App\Services\Order\OrderCreationService;
 use App\Services\Order\OrderPaginationService;
@@ -33,40 +35,21 @@ class OrderService
     }
 
 
-    //
-//    public function updateStatusFromData(int $orderId, UpdateOrderStatusDTO $data): Order
-//    {
-//        $order = Order::find($orderId);
-//
-//        if (!$order) {
-//            throw new OrderNotFoundException($orderId);
-//        }
-//
-//        if (!$order->canTransitionTo($data->status)) {
-//            throw new OrderStatusUpdateException(
-//                "Invalid status transition from '{$order->status}' to '{$data->status}'"
-//            );
-//        }
-//
-//        $previousStatus = $order->status;
-//        $order->status = $data->status;
-//        $order->save();
-//
-//        if ($data->status === Order::STATUS_CONFIRMED && $previousStatus === Order::STATUS_NEW) {
-//            event(new OrderConfirmed($order));
-//        }
-//
-//        $order->load(['items.product', 'customer']);
-//
-//        return $order;
-//    }
-//
+    /**
+     * @throws OrderNotFoundException
+     */
+    public function updateStatusOrder(int $id, OrderUpdateStatusDTO $data): Order
+    {
+        return new OrderStatefulService($id)->updateStatus($data);
+    }
+
+
     /**
      * @throws OrderNotFoundException
      */
     public function getOrderWithDetails(int $orderId): Order
     {
-        return new orderStatefulService($orderId)->getDetails();
+        return new OrderStatefulService($orderId)->getDetails();
     }
 
     public function getPaginationOrder(OrderFilterDTO $filter): \Illuminate\Pagination\CursorPaginator

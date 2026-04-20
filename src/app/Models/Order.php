@@ -67,6 +67,11 @@ class Order extends Model
         return $this->hasOne(OrderExport::class);
     }
 
+    public function canTransitionTo(string $newStatus): bool
+    {
+        $allowedTransitions = OrderStatus::STATUS_TRANSITIONS[$this->status] ?? [];
+        return in_array($newStatus, $allowedTransitions, true);
+    }
 
     /**
      * Boot method to handle model events.
