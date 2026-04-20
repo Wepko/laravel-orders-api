@@ -9,8 +9,8 @@ if [ -z "${APP_KEY}" ] || [ "${APP_KEY}" = "base64:" ]; then
     php artisan key:generate --force
 fi
 
-# Install composer dependencies (in case vendor was cleared)
-if [ ! -d "vendor" ]; then
+# Install composer dependencies if vendor doesn't exist or is empty
+if [ ! -f "vendor/autoload.php" ]; then
     echo "Installing Composer dependencies..."
     composer install --no-dev --optimize-autoloader --no-interaction
 fi
@@ -25,3 +25,5 @@ if [ "${APP_ENV}" != "testing" ]; then
 fi
 
 echo "Laravel application ready!"
+
+exec php-fpm
