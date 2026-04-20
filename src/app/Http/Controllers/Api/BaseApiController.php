@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,29 +52,23 @@ class BaseApiController extends Controller
         ], $statusCode);
     }
 
-    private function jsonPaginate(Builder $query, ?string $message = null, array $options = []): JsonResponse
-    {
-        $limit = min((int) request()->get('limit', $options['default_limit'] ?? 15), $options['max_limit'] ?? 100);
-        $offset = (int) request()->get('offset', 0);
-
-        $total = $query->count();
-        $items = $query->limit($limit)->offset($offset)->get();
-
-        $resourceClass = $options['resource'] ?? null;
-        $data = $resourceClass ? $resourceClass::collection($items) : $items;
-
+    protected function jsonPaginate(
+        mixed $data,
+        LengthAwarePaginator|CursorPaginator $paginator,
+        ?string $message = null,
+        array $options = []
+    ): JsonResponse {
         $meta = [
-            'pagination' => [
-                'limit' => $limit,
-                'offset' => $offset,
-                'total' => $total,
-                'current_count' => $items->count(),
-                'has_more' => ($offset + $limit) < $total,
-            ],
+            'pagination' => $this->buildPaginationMeta($paginator),
         ];
 
         if ($options['filters'] ?? false) {
             $meta['filters'] = $options['filters'];
+        }
+
+        // Добавляем дополнительную мета-информацию если передана
+        if (isset($options['meta'])) {
+            $meta = array_merge($meta, $options['meta']);
         }
 
         return response()->json([
@@ -82,6 +80,35 @@ class BaseApiController extends Controller
         ], 200);
     }
 
+    /**
+     * Формирует мета-информацию для пагинации
+     */
+    private function buildPaginationMeta(LengthAwarePaginator|CursorPaginator $paginator): array
+    {
+        // Cursor пагинация
+        if ($paginator instanceof CursorPaginator) {
+            return [
+                'type' => 'cursor',
+                'per_page' => $paginator->perPage(),
+                'current_count' => $paginator->count(),
+                'has_more_pages' => $paginator->hasMorePages(),
+                'next_cursor' => $paginator->nextCursor()?->encode(),
+                'prev_cursor' => $paginator->previousCursor()?->encode(),
+            ];
+        }
+
+        // Обычная пагинация (offset/limit)
+        return [
+            'type' => 'offset',
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+            'current_count' => $paginator->count(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
+    }
     protected function jsonError(
         string $message,
         string $errorCode = 'GENERAL_ERROR',
