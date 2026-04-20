@@ -13,6 +13,7 @@ use App\DTOs\OrderFilterDTO;
 use App\Models\Order;
 //use App\Services\Order\OrderCreationService;
 use App\Services\Order\OrderPaginationService;
+use App\Services\Order\OrderStatefulService;
 
 class OrderService
 {
@@ -20,7 +21,7 @@ class OrderService
 
     public function __construct(
 //        protected OrderCreationService $orderCreationService,
-        protected OrderPaginationService $orderPaginationService
+        protected OrderPaginationService $orderPaginationService,
     )
     {}
 
@@ -56,16 +57,18 @@ class OrderService
 //        return $order;
 //    }
 //
-//    public function getOrderWithDetails(int $orderId): Order
-//    {
-//        $order = Order::with(['items.product', 'customer'])->find($orderId);
-//
-//        if (!$order) {
-//            throw new OrderNotFoundException($orderId);
-//        }
-//
-//        return $order;
-//    }
+    public function getOrderWithDetails(int $orderId): Order
+    {
+        return (new orderStatefulService($orderId))->getDetails();
+
+        $order = Order::with(['items.product', 'customer'])->find($orderId);
+
+        if (!$order) {
+            throw new OrderNotFoundException($orderId);
+        }
+
+        return $order;
+    }
 
     public function getPaginationOrder(OrderFilterDTO $filter): \Illuminate\Pagination\CursorPaginator
     {

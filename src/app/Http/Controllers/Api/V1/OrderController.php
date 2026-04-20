@@ -41,7 +41,11 @@ class OrderController extends BaseApiController
 
     public function show(int $id): JsonResponse
     {
-        return $this->json(['id' => $id], 'Order details');
+        $order = $this->orderService->getOrderWithDetails($id);
+
+        return response()->json(
+            new OrderResource($order)
+        );
     }
 
     public function updateStatus(int $id): JsonResponse
