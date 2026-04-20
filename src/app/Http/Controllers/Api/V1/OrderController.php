@@ -5,13 +5,33 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Requests\OrderIndexRequest;
+use App\Http\Resources\OrderResource;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 
 class OrderController extends BaseApiController
 {
-    public function index(): JsonResponse
+
+    public function __construct(
+        protected OrderService $orderService
+    )
     {
-        return $this->json([], 'Orders list');
+    }
+
+    public function index(OrderIndexRequest $request): JsonResponse
+    {
+        $paginator = $this->orderService->getPaginationOrder(
+            filter: $request->toDTO()
+        );
+
+        $resource = OrderResource::collection($paginator);
+
+        return $this->jsonPaginate(
+            data: $resource,
+            paginator: $paginator,
+            message: __('Orders retrieved successfully')
+        );
     }
 
     public function store(): JsonResponse

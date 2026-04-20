@@ -24,10 +24,10 @@ class ProductResource extends JsonResource
             name: $product->name,
             sku: $product->sku,
             price: (float) $product->price,
-            stockQuantity: $product->stock_quantity,
+            stock_quantity: $product->stock_quantity,
             category: $product->category,
-            createdAt: $product->created_at,
-            updatedAt: $product->updated_at,
+            created_at: $product->created_at,
+            updated_at: $product->updated_at,
         );
 
         return $dto->toArray();
