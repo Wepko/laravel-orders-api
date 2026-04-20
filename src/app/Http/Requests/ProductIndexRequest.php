@@ -17,31 +17,28 @@ class ProductIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'filter' => ['nullable', 'array'],
-            'filter.category' => ['nullable', 'string', 'max:255'],
-            'filter.name' => ['nullable', 'string', 'max:255'],
-            'filter.sku' => ['nullable', 'string', 'max:255'],
-            'sort' => ['nullable', 'string', 'in:name,price,category,created_at,-name,-price,-category,-created_at'],
+            'q' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'cursor' => ['nullable', 'string'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'per_page.max' => 'Максимум 100 товаров на странице',
-            'sort.in' => 'Сортировка возможна по полям: name, price, category, created_at',
+            'limit.max' => 'Максимум 100 товаров на странице',
+            'limit.min' => 'Минимум 1 товар на странице',
         ];
     }
 
     public function toDTO(): ProductFilterDTO
     {
         return new ProductFilterDTO(
-            category: $this->input('filter.category'),
-            search: $this->input('filter.name'),
-            sort: $this->input('sort'),
-            perPage: (int) $this->input('per_page', 15),
+            q: $this->input('q'),
+            category: $this->input('category'),
+            limit: (int) min($this->input('limit', 15), 100),
+            cursor: $this->input('cursor'),
         );
     }
 }
