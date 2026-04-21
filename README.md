@@ -65,6 +65,9 @@ NEW → CONFIRMED → PROCESSING → SHIPPED → COMPLETED
 ## Запуск
 
 ```bash
+# Установить env
+cp .env.testing .env 
+
 # Поднять все сервисы
 docker compose up -d
 
